@@ -10,6 +10,12 @@ tools=${root}/tools
 
 virtualenv=${third_party}/virtualenv/keras
 
+if [ -f $(which python3) ]; then
+    PYTHON=$(which python3)
+else
+    PYTHON=python
+fi
+
 bold() {
     echo "$(tty -s && tput bold)$1$(tty -s && tput sgr0)" 
 }
@@ -34,11 +40,11 @@ sync() {
 
 install() {
     bold "keras install"
-    [ -n "$(python3 -m pip list --format columns --disable-pip-version-check | grep -w virtualenv)" ] || python3 -m pip install --force-reinstall --user --quiet virtualenv
-    [ -d "${virtualenv}" ] || virtualenv --quiet -p python3 ${virtualenv}
+    [ -n "$(${PYTHON} -m pip list --format columns --disable-pip-version-check | grep -w virtualenv)" ] || ${PYTHON} -m pip install --force-reinstall --user --quiet virtualenv
+    [ -d "${virtualenv}" ] || virtualenv --quiet -p ${PYTHON} ${virtualenv}
     source ${virtualenv}/bin/activate
-    python3 -m pip install --quiet --upgrade tensorflow
-    python3 -m pip install --quiet ${third_party}/keras
+    ${PYTHON} -m pip install --quiet --upgrade tensorflow
+    ${PYTHON} -m pip install --quiet ${third_party}/keras
     deactivate
 }
 
@@ -46,7 +52,7 @@ metadata() {
     bold "keras metadata"
     source ${virtualenv}/bin/activate
     pushd ${tools} > /dev/null
-    python3 keras-script.py metadata
+    ${PYTHON} keras-script.py metadata
     popd > /dev/null
     deactivate
 }
@@ -55,7 +61,7 @@ zoo() {
     bold "keras zoo"
     source ${virtualenv}/bin/activate
     pushd ${tools} > /dev/null
-    python3 keras-script.py zoo
+    ${PYTHON} keras-script.py zoo
     popd > /dev/null
     deactivate
 }
